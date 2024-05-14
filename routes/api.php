@@ -3,6 +3,7 @@
 use App\Http\Controllers\auth\RegisterController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CatigoryController;
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Requests\ProductCreateRequest;
@@ -40,19 +41,33 @@ Route::group([
 });
 Route::post("register", [RegisterController::class, "register"]);
 
+Route::post("changepassword",[ChangePasswordController::class, "change"])->middleware(["api","auth:api"]);
+Route::post("sendtoken", [ChangePasswordController::class, "sendToken"]);
+Route::post("verifytoken", [ChangePasswordController::class, "verifyToken"]);
+Route::post("resetpassword", [ChangePasswordController::class, "resetPassword"]);
+
 // catigory routes
 Route::group([
 
    "prefix" => "catigory",
-   "controller" => CatigoryController::class
-  
+   "controller" => CatigoryController::class, 
+   "middleware" => ["auth:api","adminRole","api"],
+
 ],function(){
-    Route::get("get/{id}", "getById");
-    Route::get("all", "getAll");
     Route::post("update" , "update");
     Route::post("delete/{id}", "delete");
     Route::post("create", "create");
+    Route::get("get/{id}", "getById");
 });
+Route::group([
+
+    "prefix" => "catigory",
+    "controller" => CatigoryController::class,
+    "middleware" => ["auth:api","api"],
+   
+ ],function(){
+    Route::get("all", "getAll");
+ });
 
 // product routes
 Route::group([

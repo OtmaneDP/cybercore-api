@@ -40,10 +40,6 @@ class OrderController extends Controller
         return JsonResponseBuilder::successeResponse("place order withe succefully", $createdCustomer->get()->toArray());
     }
 
-    public function update(){
-
-    }
-
     public function delete($orderId){
 
        $targetOrder = Order::find($orderId);
