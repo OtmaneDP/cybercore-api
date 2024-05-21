@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\HelperTraites\JsonResponseBuilder;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use GuzzleHttp\Psr7\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class AuthController extends Controller
 {
@@ -28,10 +31,7 @@ class AuthController extends Controller
         $credentials = $request->validated();
 
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json([
-                'error' => 'Unauthorized', 
-                "error-code" => 401
-            ], 401);
+            return JsonResponseBuilder::errorResponse(HttpFoundationResponse::HTTP_UNAUTHORIZED, "Unauthurized Request");
         }
 
         return $this->respondWithToken($token);
@@ -43,8 +43,8 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function me()
-    {
-        return response()->json(auth()->user());
+    {   $userInfo = response()->json(auth()->user());
+        return JsonResponseBuilder::successeResponse("user Account informtions",$userInfo->toArray());
     }
 
     /**
@@ -56,7 +56,7 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return JsonResponseBuilder::successeResponse("suceccufully loged out...",[]);
     }
 
     /**
@@ -79,6 +79,7 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
+            "status_code" => HttpFoundationResponse::HTTP_ACCEPTED,
             'access_token' => $token,
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);

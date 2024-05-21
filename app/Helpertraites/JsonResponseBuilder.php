@@ -13,16 +13,16 @@ trait  JsonResponseBuilder {
     public static function successeResponse($message, Array $data){
         return response()->json([
             "state" => "successe",
-            "status-code" => Response::HTTP_ACCEPTED, 
+            "status_code" => Response::HTTP_ACCEPTED, 
             "message" => $message, 
             "data" => $data,
         ]);
     } 
 
-    public static function errorResponse($statusCode, $message){
+    public static function errorResponse($statusCode, $message, $state = "error"){
         return response()->json([
-            "state" => "error", 
-            "status-code" => $statusCode, 
+            "state" => $state, 
+            "status_code" => $statusCode, 
             "message" => $message, 
         ]);
     }
