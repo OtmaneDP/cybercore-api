@@ -27,12 +27,11 @@ class ProductController extends Controller
         $images = $request->file("images");
 
         foreach($images as $image){
-            $imageContent = base64_encode(file_get_contents($image->getPathname()));
-            $imageType = $image->getMimeType();
+            // $imageContent = base64_encode(file_get_contents($image->getPathname()));
+            // $imageType = $image->getMimeType();
+            $imagePath = $image->store("images/products", "public");
             $createdImage = Image::create([
-                "image_content" => $imageContent,
-                "image_type" => $imageType, 
-                "name" => $image->getFilename(),
+                "image_path" => $imagePath,
             ]);
             
             $productImageModel->create([
@@ -61,19 +60,15 @@ class ProductController extends Controller
         foreach($product->images as $image){
             $image->delete();
         }
-
-        $imageModel = new Image();
         $images = $request->file("images");
 
         foreach($images as $image){
 
-            $imageContent = base64_encode(file_get_contents($image->getPathname()));
-            $imageType = $image->getMimeType();
-
+            // $imageContent = base64_encode(file_get_contents($image->getPathname()));
+            // $imageType = $image->getMimeType();
+            $imagePath = $image->store("images/products", "public");
             $createdImage = Image::create([
-                "image_content" => $imageContent,
-                "image_type" => $imageType, 
-                "name" => $image->getFilename(),
+                "image_path" => $imagePath,
             ]);
             $productImageModel->create([
                 "image_id" => $createdImage->id, 

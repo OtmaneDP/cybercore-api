@@ -11,9 +11,7 @@ class Image extends Model
     use HasFactory;
     
     protected $fillable = [
-        "image_type",
-        "image_content", 
-        "name",
+        "image_path",
     ];
 
 }

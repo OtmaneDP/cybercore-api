@@ -14,11 +14,8 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->binary("image_content");
-            $table->string("image_type");
-            $table->string("name",50);
+            $table->string("image_path");
             $table->timestamps();
-            
             // foreign key space..
         });
 
@@ -26,7 +23,6 @@ return new class extends Migration
           this db query to add medium blob to image_content row 
           because laravel dont support medium blob in blueprint schema 
         */
-        DB::statement('alter table images modify image_content mediumblob not null'); 
     }
     /**
      * Reverse the migrations.
