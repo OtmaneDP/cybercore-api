@@ -21,8 +21,7 @@ class CatigoryController extends Controller
         // create new Image in database
         $image = $request->file("image");
         $imagePath = $image->store("images/catigorys", "public");
-        // $imageContent = base64_encode(file_get_contents($image->getPathname()));
-        // $imageType = $image->getMimeType();
+      
         $createdImage = Image::create([
             "image_path" => $imagePath,
         ]); 
@@ -45,7 +44,7 @@ class CatigoryController extends Controller
         ]);
 
         $image = $request->file("image");
-        // $imageContent = base64_encode(file_get_contents($image->getPathname()));
+        
         $imagePath = $image->store("images/catigorys", "public");
         $catigory = new Catigory(); 
         $targetCatigory = $catigory->find($request->catigory_id);

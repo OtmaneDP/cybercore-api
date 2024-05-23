@@ -13,5 +13,11 @@ class Image extends Model
     protected $fillable = [
         "image_path",
     ];
+    
+    public function getImagePathAttribute()
+    {
 
+        $localhostUrl = 'http://localhost:8000/storage';
+        return $localhostUrl . '/' . $this->attributes["image_path"];
+    }
 }

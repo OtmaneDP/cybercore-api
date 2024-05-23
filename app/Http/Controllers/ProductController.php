@@ -27,8 +27,7 @@ class ProductController extends Controller
         $images = $request->file("images");
 
         foreach($images as $image){
-            // $imageContent = base64_encode(file_get_contents($image->getPathname()));
-            // $imageType = $image->getMimeType();
+            
             $imagePath = $image->store("images/products", "public");
             $createdImage = Image::create([
                 "image_path" => $imagePath,
@@ -64,8 +63,7 @@ class ProductController extends Controller
 
         foreach($images as $image){
 
-            // $imageContent = base64_encode(file_get_contents($image->getPathname()));
-            // $imageType = $image->getMimeType();
+          
             $imagePath = $image->store("images/products", "public");
             $createdImage = Image::create([
                 "image_path" => $imagePath,

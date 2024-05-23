@@ -43,8 +43,12 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function me()
-    {   $userInfo = response()->json(auth()->user());
-        return JsonResponseBuilder::successeResponse("user Account informtions",$userInfo->toArray());
+    {   $userInfo = Auth::getUser();
+        $user = [
+          "email" => $userInfo->email,
+           "id" => $userInfo->id
+        ];
+        return JsonResponseBuilder::successeResponse("user Account informtions",$user);
     }
 
     /**
