@@ -6,11 +6,8 @@ namespace App\Http\Controllers;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductImage;
-use Illuminate\Http\Request;
 use App\HelperTraites\JsonResponseBuilder;
 use App\Http\Requests\CreateProductRequest;
-use App\Models\Cart;
-use App\Models\CartItem;
 
 class ProductController extends Controller
 {
@@ -97,10 +94,11 @@ class ProductController extends Controller
         $allProducts = Product::get();
         foreach($allProducts as $product){
            array_merge($product->toArray(),$product->images->toArray());
+           array_merge($product->toArray(), ["catigory" => $product->catigory->name]);
         }
         return response()->json([
             "message" => "get all products", 
-            "data" => $allProducts
+            "data" => $allProducts, 
         ]);
     }
 
@@ -111,33 +109,5 @@ class ProductController extends Controller
             "message" => "product details", 
             "data" => $product
         ]);
-    }
-
-    public function addToCart(Request $request){
-
-        $request->validate([
-            "user_id" => "required|numeric", 
-            "product_id" => "required|numeric",
-            "color" => "required|string", 
-            "ram" => "required|string",
-        ]);
-        $userCart = Cart::where("user_id",$request->user_id)->get()[0];
-
-        CartItem::create([
-            "cart_id" => $userCart->id,
-            "product_id" => $request->product_id,
-            "contete" => 1,
-            "color" => $request->color, 
-            "ram" => $request->ram,
-        ]);
-
-        return JsonResponseBuilder::successeResponse("push into cart  successfully..",[]);
-    }
-
-    public function deleteFromCart($productId){
-
-       CartItem::where("product_id", $productId)->delete();
-
-       return JsonResponseBuilder::successeResponse("pop  from cart withe successfully..",[]);
     }
 }

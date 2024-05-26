@@ -9,15 +9,18 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateOrderRequest;
 use App\HelperTraites\JsonResponseBuilder;
+use App\Models\CartItem;
 
 class OrderController extends Controller
 {
     //
 
     public function create(CreateOrderRequest $request){
-    
-        $createdCustomer = Customer::create($request->all());
+        // create new Customer
+        $customerModel = new Customer();
+        $createdCustomer = $customerModel->create($request->only($customerModel->fillable));
         
+        // create new order associeted withe Created Customer
         $createdOrder = Order::create([
             "user_id" => $request->user_id,
             "customer_id" => $createdCustomer->id,
@@ -25,18 +28,21 @@ class OrderController extends Controller
         ]);
         // get cart items to place order
         $userCart = Cart::where("user_id", $request->user_id)->get()[0];
+        $userCartItems = json_decode($request->cart_cached_items, true);
         
-        foreach($userCart->items as $item){
+        // iterate cart items recived from client cache  
+        foreach($userCartItems as $item){
             OrderItem::create([
-               "contete"=> $item->contete, 
-               "ram" => $item->product->ram,
-               "color" => $item->product->color, 
-               "product_id" => $item->product->id ,
-               "order_id" => $createdOrder->id
+               "order_id" => $createdOrder->id,
+               "contete"=> $item["contete"], 
+               "color" => $item["color"], 
+               "product_id" => $item["product_id"] ,
+              
             ]);
-            $item->delete();
         } 
         
+        // delete product from cart items 
+        CartItem::where("cart_id", $userCart->id)->delete();
         return JsonResponseBuilder::successeResponse("place order withe succefully", $createdCustomer->get()->toArray());
     }
 

@@ -12,7 +12,6 @@ class OrderItem extends Model
     public $timestamps = false;
     protected $fillable = [
        "contete",
-       "ram" ,
        "color" ,
        "product_id",
        "order_id" ,

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\auth\RegisterController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatigoryController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\OrderController;
@@ -90,8 +91,6 @@ Route::group([
 ],function(){
     Route::get("get/{id}",  "getById"); 
     Route::get("all",  "getAll");
-    Route::post("addToCart",  "addToCart");
-    Route::get("deleteFromCart/{id}",  "deleteFromCart");
 });
 
 // order routes
@@ -102,7 +101,22 @@ Route::group([
    "controller" => OrderController::class,
 
 ],function(){
-   Route::post("order/placeOrder", "create");
-   Route::get("order/cancel/{id}", "delete");
+   Route::post("placeOrder", "create");
+   Route::get("cancel/{id}", "delete");
 }); 
 Route::get("order/all" , [OrderController::class, "getAll"])->middleware(["adminRole","auth:api"]);
+
+
+// cart routes
+
+Route::group([
+
+    "middleware" => ["auth:api","api"],
+    "controller" => CartController::class,
+ 
+], function (){
+    Route::post("cartItems/update", "updateCartItems");
+    Route::post("product/addToCart",  "addToCart");
+    Route::get("product/deleteFromCart/{id}",  "deleteFromCart");
+    Route::get("product/inCartItems", "getCartItems");
+});

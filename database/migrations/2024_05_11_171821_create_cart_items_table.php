@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->integer("contete");
             $table ->string("color");
-            $table->integer("ram");
+            // $table->integer("ram");
             
             
             $table->unsignedBigInteger("product_id");

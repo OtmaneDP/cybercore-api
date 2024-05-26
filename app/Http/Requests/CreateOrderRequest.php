@@ -28,6 +28,7 @@ class CreateOrderRequest extends FormRequest
             "phon_number" => "required|numeric",
             "amount" => "required|numeric",
             "user_id" => "required|numeric",
+            "cart_cached_items" => "required|json",
         ];
     }
 }

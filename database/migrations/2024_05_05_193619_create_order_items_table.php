@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->integer("contete");
-            $table->integer("ram"); 
+            // $table->integer("ram"); 
             $table->string("color");
             // foreign key space..
             $table->unsignedBigInteger("product_id");
