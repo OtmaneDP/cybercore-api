@@ -26,7 +26,7 @@ class ChangePasswordController extends Controller
             return JsonResponseBuilder::successeResponse("the password updated withe suceccefully",[]);
         }
 
-        return JsonResponseBuilder::errorResponse("password incorrect", Response::HTTP_FORBIDDEN);
+        return JsonResponseBuilder::errorResponse(Response::HTTP_FORBIDDEN, "password incorrect");
     }
 
     public function sendToken(Request $request){

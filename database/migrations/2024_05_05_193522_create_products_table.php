@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer("price")->default(0); 
             $table->string("color", 200);
             $table->integer("contete");
+            $table->boolean("state")->default(true);
             
             // foreign key space..
             $table->unsignedBigInteger("catigory_id");

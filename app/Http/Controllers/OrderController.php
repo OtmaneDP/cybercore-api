@@ -10,11 +10,12 @@ use Illuminate\Http\Request;
 use App\Http\Requests\CreateOrderRequest;
 use App\HelperTraites\JsonResponseBuilder;
 use App\Models\CartItem;
+use App\Models\Product;
 
 class OrderController extends Controller
 {
     //
-
+   
     public function create(CreateOrderRequest $request){
         // create new Customer
         $customerModel = new Customer();
@@ -26,19 +27,31 @@ class OrderController extends Controller
             "customer_id" => $createdCustomer->id,
             "amount" => $request->amount,
         ]);
+
         // get cart items to place order
         $userCart = Cart::where("user_id", $request->user_id)->get()[0];
         $userCartItems = json_decode($request->cart_cached_items, true);
+         
         
         // iterate cart items recived from client cache  
         foreach($userCartItems as $item){
+          
             OrderItem::create([
                "order_id" => $createdOrder->id,
-               "contete"=> $item["contete"], 
-               "color" => $item["color"], 
-               "product_id" => $item["product_id"] ,
-              
+               "contete"=> $item["cart_item"]["contete"], 
+               "color" => $item["cart_item"]["color"], 
+               "product_id" => $item["cart_item"]["product_id"] ,
             ]);
+            $targetProduct = Product::where("id", $item["cart_item"]["product_id"])->first();
+            $updatedContete = $targetProduct->contete - $item["cart_item"]["contete"];
+            $targetProduct->update([
+                "contete" => $updatedContete,
+            ]);
+            if($updatedContete === 0){
+                $targetProduct->update([
+                    "state" => false,
+                ]);
+            }
         } 
         
         // delete product from cart items 
@@ -64,5 +77,9 @@ class OrderController extends Controller
 
         return JsonResponseBuilder::successeResponse("All order withe its products",$orders->toArray());
     }
+
+    public function checkAvailabelContity(){
+        // check if the have availabel contity of  products   
+    } 
 
 }

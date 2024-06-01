@@ -117,6 +117,6 @@ Route::group([
 ], function (){
     Route::post("cartItems/update", "updateCartItems");
     Route::post("product/addToCart",  "addToCart");
-    Route::get("product/deleteFromCart/{id}",  "deleteFromCart");
+    Route::post("product/deleteFromCart",  "deleteFromCart");
     Route::get("product/inCartItems", "getCartItems");
 });

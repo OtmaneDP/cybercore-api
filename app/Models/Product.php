@@ -18,6 +18,7 @@ class Product extends Model
         "name", "description", 
         "price", "color", "contete", 
         "admin_id", "catigory_id", 
+        "state"
     ]; 
     public function images(): BelongsToMany{
 
@@ -31,3 +32,4 @@ class Product extends Model
        return json_decode($this->attributes["color"]);
     }
 }
+

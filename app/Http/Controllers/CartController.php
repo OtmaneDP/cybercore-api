@@ -17,25 +17,58 @@ class CartController extends Controller
             "color" => "required|string", 
         ]);
         $userCart = Cart::where("user_id",$request->user_id)->get()[0];
+        $exictingItem = null;
+        foreach($userCart->items as $item){
+          if($item->product_id == $request->product_id){
+            $exictingItem = $item;
+          }
+        }
+        // $exictingItem = CartItem::where("product_id", $request->product_id)->first();
+        // $exictingItem == null ? CartItem::create([
+        //     "cart_id" => $userCart->id,
+        //     "product_id" => $request->product_id,
+        //     "contete" => 1,
+        //     "color" => $request->color,
+        // ]) : CartItem::where("id", $exictingItem->id)->update([
+        //     "contete" => $exictingItem->contete+=1,
+        // ]);
+        if($exictingItem == null){
+            CartItem::create([
+                    "cart_id" => $userCart->id,
+                    "product_id" => $request->product_id,
+                    "contete" => 1,
+                    "color" => $request->color,
+            ]);
+        }else{
+            // $cartItem = CartItem::where("id", $exictingItem->id);
+            if($exictingItem ->product->contete > $exictingItem->contete){
+                $exictingItem->update([
+                    "contete" => $exictingItem->contete+=1,
+            ]);
+            }
+        }
+        
 
-        $exictingItem = CartItem::where("product_id", $request->product_id)->first();
-        $exictingItem == null ? CartItem::create([
-            "cart_id" => $userCart->id,
-            "product_id" => $request->product_id,
-            "contete" => 1,
-            "color" => $request->color,
-        ]) : CartItem::where("id", $exictingItem->id)->update([
-            "contete" => $exictingItem->contete+=1,
-        ]);
 
         return JsonResponseBuilder::successeResponse("push into cart  successfully..",[]);
     }
 
-    public function deleteFromCart($productId){
+    public function deleteFromCart(Request $request){
 
-       CartItem::where("product_id", $productId)->delete();
-
-       return JsonResponseBuilder::successeResponse("pop  from cart withe successfully..",[]);
+        $request->validate([
+            "user_id" => "required|numeric", 
+            "product_id" => "required|numeric"
+         ]);
+         $userCart = Cart::where("user_id", $request->user_id)->first(); 
+         foreach($userCart->items as $item){
+            $item->product_id == $request->product_id ? $item->delete() : null;
+         }
+      //    CartItem::where([
+      //       "product_id", $request->product_id, 
+      //       "user_id"  => $request->user_id,
+      //    ])->delete();
+  
+         return JsonResponseBuilder::successeResponse("pop  from cart withe successfully..",[]);
     }
 
     public function getCartItems(Request $request){
@@ -43,9 +76,21 @@ class CartController extends Controller
          "user_id" => "required|numeric",
         ]);
         $cartItems =  Cart::where("user_id", $request->user_id)->first()->items;
+        
+        $responseData = [];
+        foreach ($cartItems as $item) {
+            $cartItemData = $item->toArray();
+            $productData = $item->product->toArray();
+            $productImagesData["images"] = $item->product->images->toArray();
+    
+            $responseData [] =  [
+              "cart_item" => $cartItemData, 
+              "product"    => array_merge($productData, $productImagesData), 
+            ];
+        }
         return JsonResponseBuilder::successeResponse(
            "get all items withe succefully..", // message
-           $cartItems->toArray()); // Data
+           $responseData); // Data
     }
 
     public function updateCartItems(Request $request){
@@ -61,10 +106,10 @@ class CartController extends Controller
 
         foreach($updatedCartItems as $item){
           CartItem::where([
-            "product_id" => $item["product_id"], 
+            "product_id" => $item["cart_item"]["product_id"], 
             "cart_id" => $userCart->id
           ])->update([
-            "contete" => $item["contete"],
+            "contete" => $item["cart_item"]["contete"],
           ]);
         }
 
