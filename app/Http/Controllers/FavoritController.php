@@ -49,11 +49,18 @@ class FavoritController extends Controller
             "user_id" => "required|numeric",
         ]);
         
-      
-        $favortiedProducts = Product::join("Favorits", "products.id", "=" , "favorits.product_id")
-        ->select("products.*")->where("favorits.user_id", "=" , $request->user_id)->get()->toArray();
+        $userFavorite = Favorit::where([
+            "user_id" => $request->user_id,
+        ])->get();
+        
+        foreach($userFavorite as $favorite){
+            array_merge($favorite->product->toArray(),$favorite->product->images->toArray());
+            array_merge($favorite->product->toArray(), ["catigory" => $favorite->product->catigory->name]);
+        }
+        // $favortiedProducts = Product::join("Favorits", "products.id", "=" , "favorits.product_id")
+        // ->select("products.*")->where("favorits.user_id", "=" , $request->user_id)->get()->toArray();
 
-        return JsonResponseBuilder::successeResponse("get All favorites products", $favortiedProducts);
+        return JsonResponseBuilder::successeResponse("get All favorites products", $userFavorite->toArray());
         
     }
 }

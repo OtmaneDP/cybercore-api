@@ -100,7 +100,7 @@ Route::group([
     "controller" => FavoritController::class
 ],function () {
     Route::post("addToFavorite", "addToFavorite");
-    Route::get("popFromFavorite", "popFromFavorite"); 
+    Route::post("popFromFavorite", "popFromFavorite"); 
     Route::post("favorite" , "getAllFavorite");
 });
 
