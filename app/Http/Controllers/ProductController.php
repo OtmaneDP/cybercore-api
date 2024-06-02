@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
+use Illuminate\Http\Request;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\HelperTraites\JsonResponseBuilder;
 use App\Http\Requests\CreateProductRequest;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -90,8 +91,18 @@ class ProductController extends Controller
         ]);
     }
 
-    public function getAll(){
-        $allProducts = Product::get();
+    public function getAll(Request $request){
+        
+        $request->validate([
+            "user_id" => "required|numeric",
+        ]);
+        $allProducts = Product::select('products.*')
+        ->selectRaw('IF(favorits.product_id IS NOT NULL, true, false) AS favorited')
+        ->leftJoin('favorits', function ($join) use ($request) {
+            $join->on('products.id', '=', 'favorits.product_id')
+                 ->where('favorits.user_id', '=', $request->user_id);
+        })->get();
+
         foreach($allProducts as $product){
            array_merge($product->toArray(),$product->images->toArray());
            array_merge($product->toArray(), ["catigory" => $product->catigory->name]);

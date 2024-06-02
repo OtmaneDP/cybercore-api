@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatigoryController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\FavoritController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Requests\ProductCreateRequest;
@@ -91,6 +92,16 @@ Route::group([
 ],function(){
     Route::get("get/{id}",  "getById"); 
     Route::get("all",  "getAll");
+});
+
+Route::group([
+    "prefix" => "product", 
+    "middleware" => ["auth:api", "api"], 
+    "controller" => FavoritController::class
+],function () {
+    Route::post("addToFavorite", "addToFavorite");
+    Route::get("popFromFavorite", "popFromFavorite"); 
+    Route::post("favorite" , "getAllFavorite");
 });
 
 // order routes
