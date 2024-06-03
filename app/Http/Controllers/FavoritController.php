@@ -44,22 +44,17 @@ class FavoritController extends Controller
     }
 
     public function getAllFavorite(Request $request){
-        
-        $request -> validate([
-            "user_id" => "required|numeric",
-        ]);
-        
-        $userFavorite = Favorit::where([
-            "user_id" => $request->user_id,
-        ])->get();
-        
-        foreach($userFavorite as $favorite){
-            array_merge($favorite->product->toArray(),$favorite->product->images->toArray());
-            array_merge($favorite->product->toArray(), ["catigory" => $favorite->product->catigory->name]);
-        }
-        // $favortiedProducts = Product::join("Favorits", "products.id", "=" , "favorits.product_id")
-        // ->select("products.*")->where("favorits.user_id", "=" , $request->user_id)->get()->toArray();
 
+        $userFavorite = $allProducts = Product::select('products.*')
+        ->selectRaw('IF(favorits.product_id IS NOT NULL, true, false) AS favorited')
+        ->rightJoin('favorits', function ($join) use ($request) {
+            $join->on('products.id', '=', 'favorits.product_id')
+                 ->where('favorits.user_id', '=', $request->user_id);
+        })->get();
+        foreach($allProducts as $product){
+            array_merge($product->toArray(),$product->images->toArray());
+            array_merge($product->toArray(), ["catigory" => $product->catigory->name]);
+         }
         return JsonResponseBuilder::successeResponse("get All favorites products", $userFavorite->toArray());
         
     }

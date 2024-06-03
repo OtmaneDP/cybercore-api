@@ -41,7 +41,7 @@ class ChangePasswordController extends Controller
             Mail::to($request->email)->send(new ResetPasswordMail($randomDegit));
             return JsonResponseBuilder::successeResponse("check your email you hve recived reset token consiste of sex degits",[]);
         }
-        return JsonResponseBuilder::errorResponse("indefined  email", Response::HTTP_FORBIDDEN);
+        return JsonResponseBuilder::errorResponse(Response::HTTP_FORBIDDEN, "indefined  email");
     }
 
     public function verifyToken(Request $request){
@@ -50,11 +50,10 @@ class ChangePasswordController extends Controller
             "email" => "required|string"
         ]);
         $cachedToken = Cache::get("reset_password_".$request->email);
-        var_dump($cachedToken);
         if($request->reset_token == $cachedToken){
             return JsonResponseBuilder::successeResponse("token vlidation withe succefully",[]);
         }
-        return JsonResponseBuilder::errorResponse("indefined  token", Response::HTTP_FORBIDDEN);
+        return JsonResponseBuilder::errorResponse(Response::HTTP_FORBIDDEN, "indefined  token", );
     }
     public function resetPassword(Request $request){
         $request->validate([
