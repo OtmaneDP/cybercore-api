@@ -2,34 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\HelperTraites\JsonResponseBuilder;
 use App\Models\Image;
 use App\Models\Catigory;
 use App\Models\CatigoryImage;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CatigoryController extends Controller
 {
     //
     
     public function create(Request $request){
+        try{
 
-        $catigory = new Catigory();
-        $request->validate([
-            "name" => "required|string", 
-            "image" => "required|image",
-        ]);
-        // create new Image in database
-        $image = $request->file("image");
-        $imagePath = $image->store("images/catigorys", "public");
-      
-        $createdImage = Image::create([
-            "image_path" => $imagePath,
-        ]); 
-        // create new catigory
-        Catigory::create([
-            "name" => $request->name, 
-            "image_id" => $createdImage->id
-        ]);
+            $catigory = new Catigory();
+            $request->validate([
+                "name" => "required|string", 
+                "image" => "required|image",
+            ]);
+            // create new Image in database
+            $image = $request->file("image");
+            $imagePath = $image->store("images/catigorys", "public");
+          
+            $createdImage = Image::create([
+                "image_path" => $imagePath,
+            ]); 
+            // create new catigory
+            Catigory::create([
+                "name" => $request->name, 
+                "image_id" => $createdImage->id
+            ]);
+
+        }catch(QueryException $ex){
+            if( $ex->errorInfo[1] == 1062){
+                return JsonResponseBuilder::errorResponse(
+                Response::HTTP_CONFLICT, 
+                "this name of Category must be unique");
+            }
+        }
+
         return response()->json([
             "message" => "category created withe succefully..."
         ]);

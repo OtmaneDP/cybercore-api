@@ -59,6 +59,8 @@ class ChangePasswordController extends Controller
         $request->validate([
             "reset_token" => "required|numeric|max_digits:6|min_digits:6",
             "reset_password" => "required|string",
+
+            
             "email" => "required|string",
         ]);
         $targetCachedToken = "reset_password_".$request->email;

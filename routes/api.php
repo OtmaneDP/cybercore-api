@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatigoryController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\FavoritController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Requests\ProductCreateRequest;
@@ -130,4 +131,15 @@ Route::group([
     Route::post("product/addToCart",  "addToCart");
     Route::post("product/deleteFromCart",  "deleteFromCart");
     Route::get("product/inCartItems", "getCartItems");
+});
+
+Route::group([
+    "prefix" => "notification", 
+    "middleware" => ["auth:api" , "api"], 
+    "controller" => NotificationController::class,
+],function () {
+    Route::delete ("delete", "delete");
+    Route::post("create", "create");
+    Route::get("getAll", "getAll");
+    Route::post("update" , "update");
 });

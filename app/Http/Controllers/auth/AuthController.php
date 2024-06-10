@@ -85,7 +85,7 @@ class AuthController extends Controller
         return response()->json([
             "status_code" => HttpFoundationResponse::HTTP_ACCEPTED,
             'access_token' => $token,
-            'expires_in' => auth()->factory()->getTTL() * 60 * 60 * 24 * 90
+            'expires_in' => auth()->factory()->getTTL() * 60 
         ]);
     }
 }
