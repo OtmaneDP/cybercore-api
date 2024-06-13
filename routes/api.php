@@ -115,8 +115,19 @@ Route::group([
 ],function(){
    Route::post("placeOrder", "create");
    Route::get("cancel/{id}", "delete");
+   Route::get("userOrders/{userId}", "getOrdersByUserId");
 }); 
-Route::get("order/all" , [OrderController::class, "getAll"])->middleware(["adminRole","auth:api"]);
+Route::group([
+    "prefix" => "order",
+    "middleware" => ["auth:api","api", "adminRole"],
+    "controller" => OrderController::class,
+ 
+ ],function(){
+    Route::post("reject", "reject");
+    Route::post("accept" , "accept");
+    Route::get("all" , "getAll");
+ }); 
+
 
 
 // cart routes
@@ -133,6 +144,7 @@ Route::group([
     Route::get("product/inCartItems", "getCartItems");
 });
 
+// notification routes
 Route::group([
     "prefix" => "notification", 
     "middleware" => ["auth:api" , "api"], 

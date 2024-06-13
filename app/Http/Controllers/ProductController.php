@@ -8,6 +8,8 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\HelperTraites\JsonResponseBuilder;
 use App\Http\Requests\CreateProductRequest;
+use App\Models\Notification;
+use App\Models\Order;
 use Illuminate\Database\QueryException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -104,12 +106,20 @@ class ProductController extends Controller
         foreach($product->images as $image){
             $image->delete();
         }
+        $orders =$product->orders;
 
-        $product->delete();
+        foreach ($orders as $order) {
+            $order->delete();
+            $order->customer->delete();
+            Notification::create([
+                "user_id"=> $order->user_id , 
+                "title" => "Order Rejected",
+                "content" => "Sorry' your order id= $order->id has rejected because some product in this order be not available ", 
+            ]);
+        }
+        $product->delete();  
 
-        return response()->json([
-            "message" => "product deleted withe succefully...."
-        ]);
+        return JsonResponseBuilder::successeResponse("product deleted withe succesfully", []);
     }
 
     public function getAll(Request $request){

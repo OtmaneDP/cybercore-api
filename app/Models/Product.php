@@ -27,7 +27,9 @@ class Product extends Model
     public function catigory() : BelongsTo{
         return $this->belongsTo(Catigory::class);
     }
-
+    public function orders(): BelongsToMany{
+      return $this->belongsToMany(Order::class, "order_items");
+    }
     public function getColorAttribute(){
        return json_decode($this->attributes["color"]);
     }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->boolean("delivery_status")->default(false);
             $table->integer("amount");
+            $table->boolean("accepted")->default(false);
 
             // foreign key space..
             $table->unsignedBigInteger("user_id");

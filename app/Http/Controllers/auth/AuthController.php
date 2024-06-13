@@ -46,7 +46,8 @@ class AuthController extends Controller
     {   $userInfo = Auth::getUser();
         $user = [
           "email" => $userInfo->email,
-           "id" => $userInfo->id
+           "id" => $userInfo->id,
+           "role" =>$userInfo->role,
         ];
         return JsonResponseBuilder::successeResponse("user Account informtions",$user);
     }
@@ -85,7 +86,7 @@ class AuthController extends Controller
         return response()->json([
             "status_code" => HttpFoundationResponse::HTTP_ACCEPTED,
             'access_token' => $token,
-            'expires_in' => auth()->factory()->getTTL() * 60 
+            'expires_in' => auth()->factory()->getTTL() * 60 *24*60
         ]);
     }
 }

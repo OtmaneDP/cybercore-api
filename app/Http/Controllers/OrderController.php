@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\CreateOrderRequest;
 use App\HelperTraites\JsonResponseBuilder;
 use App\Models\CartItem;
+use App\Models\Notification;
 use App\Models\Product;
 
 class OrderController extends Controller
@@ -62,24 +63,85 @@ class OrderController extends Controller
     public function delete($orderId){
 
        $targetOrder = Order::find($orderId);
-
-    //    delete order and its informtions using cascade delete
        $targetOrder->customer->delete();
+       $targetOrder->delete();
        return JsonResponseBuilder::successeResponse("Order Cancled withe successfully..",[]); 
     }
     
+    public function accept(Request $request){
+        $request ->validate([
+            "user_id" => "required|numeric", 
+            "order_id"=> "required|numeric"
+        ]);
+
+        $targetOrder = Order::where([
+            "user_id" => $request->user_id, 
+            "id" => $request ->order_id
+        ])->first();
+        
+        $targetOrder->update([
+            "accepted"  => true,
+        ]);
+        Notification::create([
+            "user_id" => $request->user_id, 
+            "title" => "Order Accepted", 
+            "content" => "Your Order has Accepted and it gen a be shipped max in 48h orderID=".$targetOrder->id, 
+        ]);
+
+        return JsonResponseBuilder::successeResponse("Order accepted withe successfully..",[]); 
+    }
+    public function reject(Request $request){
+        $request ->validate([
+            "user_id" => "required|numeric", 
+            "order_id"=> "required|numeric"
+        ]);
+
+        $targetOrder = Order::where([
+            "user_id" => $request->user_id, 
+            "id" => $request ->order_id
+        ])->first();
+
+        $targetOrder->customer->delete();
+        $targetOrder->delete();
+        // send notification after reject Order
+        Notification::create([
+            "user_id" => $request->user_id, 
+            "title" => "Order Rejcted", 
+            "content" => "Sorry your Order  has Rejectd  orderID=".$targetOrder->id, 
+        ]);
+        return JsonResponseBuilder::successeResponse("Order Rjected  withe successfully..",[]); 
+    }
     public function getAll(){
         $orders = Order::get();
         
         foreach($orders as $order){
+            foreach($order->products as $product){
+                array_merge($product->toArray(), $product->images->toArray());
+            }
            array_merge($order->toArray(), $order->products->toArray());
+           array_merge($order->toArray(), $order->customer->toArray());
+           
         }
 
         return JsonResponseBuilder::successeResponse("All order withe its products",$orders->toArray());
     }
+    
+    public function getOrdersByUserId($userId){
 
-    public function checkAvailabelContity(){
-        // check if the have availabel contity of  products   
-    } 
+        $orders = Order::where([
+            "user_id" => $userId
+        ])->get();
+        
+        foreach($orders as $order){
+            foreach($order->products as $product){
+                array_merge($product->toArray(), $product->images->toArray());
+            }
+           array_merge($order->toArray(), $order->products->toArray());
+           array_merge($order->toArray(), $order->customer->toArray());
+           
+        }
 
+        return JsonResponseBuilder::successeResponse("All order by user Id withe its products",$orders->toArray());
+
+    }
 }

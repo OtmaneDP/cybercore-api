@@ -30,11 +30,11 @@ class CatigoryController extends Controller
                 "image_path" => $imagePath,
             ]); 
             // create new catigory
-            Catigory::create([
+            $createdCatigory = Catigory::create([
                 "name" => $request->name, 
                 "image_id" => $createdImage->id
             ]);
-
+        
         }catch(QueryException $ex){
             if( $ex->errorInfo[1] == 1062){
                 return JsonResponseBuilder::errorResponse(
@@ -42,10 +42,8 @@ class CatigoryController extends Controller
                 "this name of Category must be unique");
             }
         }
-
-        return response()->json([
-            "message" => "category created withe succefully..."
-        ]);
+        array_merge($createdCatigory->toArray(), $createdCatigory->image->toArray());
+        return JsonResponseBuilder::successeResponse("catigory created with success",$createdCatigory->toArray() );
     }
 
     public function update(Request $request){

@@ -13,7 +13,7 @@ class Order extends Model
 {
     use HasFactory;
      
-    protected $fillable = ["user_id", "customer_id", "amount"];
+    protected $fillable = ["user_id", "customer_id", "amount", "accepted"];
     public function products(): BelongsToMany{
 
       return $this->belongsToMany(Product::class,"order_items");
