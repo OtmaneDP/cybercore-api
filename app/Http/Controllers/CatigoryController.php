@@ -66,9 +66,7 @@ class CatigoryController extends Controller
             "image_path" => $imagePath,
         ]);
 
-        return response()->json([
-            "message" => "catigory updated withe succefully..."
-        ]);
+        return JsonResponseBuilder::successeResponse("catigory updated withe succefully..", []);
     }  
     
     public function delete($catigoryId){
@@ -76,9 +74,7 @@ class CatigoryController extends Controller
         $targetCatigory = Catigory::find($catigoryId);
         $targetCatigory->delete();
        
-        return response()->json([
-           "message" => "catigory deleted withe succefully..."
-        ]);
+        return JsonResponseBuilder::successeResponse("catigory deleted withe succefully...", []);
     }
 
     public function getAll(){
@@ -89,10 +85,7 @@ class CatigoryController extends Controller
           array_merge($catigory->toArray(), $catigory->image->toArray());
         }
 
-        return response()->json([
-          "message" => "show all catigorys", 
-          "data" => $allCatigorys,
-        ]);
+        return JsonResponseBuilder::successeResponse("show all catigorys", $allCatigorys->toArray());
     }
 
     public function getById($catigoryId){

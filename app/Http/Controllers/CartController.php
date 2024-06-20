@@ -23,15 +23,7 @@ class CartController extends Controller
             $exictingItem = $item;
           }
         }
-        // $exictingItem = CartItem::where("product_id", $request->product_id)->first();
-        // $exictingItem == null ? CartItem::create([
-        //     "cart_id" => $userCart->id,
-        //     "product_id" => $request->product_id,
-        //     "contete" => 1,
-        //     "color" => $request->color,
-        // ]) : CartItem::where("id", $exictingItem->id)->update([
-        //     "contete" => $exictingItem->contete+=1,
-        // ]);
+
         if($exictingItem == null){
             CartItem::create([
                     "cart_id" => $userCart->id,
@@ -40,7 +32,6 @@ class CartController extends Controller
                     "color" => $request->color,
             ]);
         }else{
-            // $cartItem = CartItem::where("id", $exictingItem->id);
             if($exictingItem ->product->contete > $exictingItem->contete){
                 $exictingItem->update([
                     "contete" => $exictingItem->contete+=1,
@@ -63,11 +54,7 @@ class CartController extends Controller
          foreach($userCart->items as $item){
             $item->product_id == $request->product_id ? $item->delete() : null;
          }
-      //    CartItem::where([
-      //       "product_id", $request->product_id, 
-      //       "user_id"  => $request->user_id,
-      //    ])->delete();
-  
+         
          return JsonResponseBuilder::successeResponse("pop  from cart withe successfully..",[]);
     }
 
