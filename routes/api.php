@@ -155,3 +155,7 @@ Route::group([
     Route::get("getAll", "getAll");
     Route::post("update" , "update");
 });
+
+Route::get("/github/oauth/calback", function(Request $request){
+  var_dump($request->code);
+});
